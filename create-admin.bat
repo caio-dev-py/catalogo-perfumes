@@ -19,13 +19,7 @@ echo Username: %USERNAME%
 echo.
 
 REM Usando PowerShell para fazer a requisição (mais compatível com Windows)
-powershell -Command ^
-$body = @{ ^
-    username = '%USERNAME%'; ^
-    password = '%PASSWORD%'; ^
-    secret = '%SECRET%' ^
-} | ConvertTo-Json; ^
-Invoke-RestMethod -Uri 'http://localhost:3000/api/admin/register' -Method POST -ContentType 'application/json' -Body $body | ConvertTo-Json
+powershell -Command "$body = @{ username = '%USERNAME%'; password = '%PASSWORD%'; secret = '%SECRET%' } | ConvertTo-Json; Invoke-RestMethod -Uri 'http://localhost:3000/api/admin/register' -Method POST -ContentType 'application/json' -Body $body" 2>nul
 
 echo.
 echo ✅ Admin criado com sucesso!

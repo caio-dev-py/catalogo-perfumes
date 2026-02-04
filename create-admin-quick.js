@@ -1,12 +1,32 @@
 #!/usr/bin/env node
 
-const http = require('http');
+import http from 'http';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
 
-const data = JSON.stringify({
-  username: 'caio_araujo',
-  password: '123456',
-  secret: 'Admin@2024#Perfumes$Secure!Key123'
-});
+// Configuração para carregar o .env.local da raiz do projeto
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.resolve(__dirname, './.env.local') });
+
+// Agora pegamos a secret direto do ambiente (process.env)
+const secret = process.env.ADMIN_SECRET_KEY;
+const username = process.argv[2];
+const password = process.argv[3];
+
+// Validação de segurança e UX
+if (!secret) {
+  console.log('\x1b[31m%s\x1b[0m', '\n[ERRO] ADMIN_SECRET_KEY não encontrada no seu .env.local');
+  process.exit(1);
+}
+
+if (!username || !password) {
+  console.log('\x1b[33m%s\x1b[0m', '\nUso: node create-admin-quick.js <username> <password>');
+  process.exit(1);
+}
+
+const data = JSON.stringify({ username, password, secret: secret.trim() });
+const dataBuffer = Buffer.from(data);
 
 const options = {
   hostname: 'localhost',
@@ -15,39 +35,25 @@ const options = {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'Content-Length': data.length
+    'Content-Length': dataBuffer.length
   }
 };
 
+console.log('\x1b[36m%s\x1b[0m', `\n[*] Usando Secret Key do .env.local para criar: ${username}...`);
+
 const req = http.request(options, (res) => {
-  console.log(`Status: ${res.statusCode}`);
-  
   let body = '';
-  res.on('data', (chunk) => {
-    body += chunk;
-  });
-  
+  res.on('data', (chunk) => body += chunk);
   res.on('end', () => {
-    try {
-      const result = JSON.parse(body);
-      console.log('Resposta:', result);
-      
-      if (res.statusCode === 201) {
-        console.log('\n✓ Conta de admin criada com sucesso!');
-        console.log('Username: caio_araujo');
-        console.log('Password: 123456');
-        console.log('\nVocê pode fazer login em: http://localhost:3000/admin/login');
-      }
-    } catch (e) {
-      console.log('Resposta bruta:', body);
+    const result = JSON.parse(body);
+    if (res.statusCode === 201 || res.statusCode === 200) {
+      console.log('\x1b[32m%s\x1b[0m', '\n[OK] Admin criado com sucesso usando a chave do ambiente!');
+    } else {
+      console.error('\x1b[31m%s\x1b[0m', `\n[ERRO ${res.statusCode}]`, result.error || result);
     }
   });
 });
 
-req.on('error', (e) => {
-  console.error('Erro:', e.message);
-  process.exit(1);
-});
-
-req.write(data);
+req.on('error', (e) => console.error('\n[ERRO] Servidor offline:', e.message));
+req.write(dataBuffer);
 req.end();
