@@ -99,7 +99,7 @@ export default function CatalogPage() {
             {/* Search */}
             <div className="mb-8 bg-gradient-to-br from-amber-50 to-yellow-50 p-6 rounded-2xl shadow-lg transform hover:scale-105 transition-all duration-300">
               <h3 className="text-lg font-bold bg-gradient-to-r from-amber-900 to-amber-700 bg-clip-text text-transparent mb-4">
-                🔍 Pesquisar
+                Pesquisar
               </h3>
               <input
                 type="text"
@@ -113,7 +113,7 @@ export default function CatalogPage() {
             {/* Categories */}
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-2xl shadow-lg">
               <h3 className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-4">
-                📂 Categorias
+                Categorias
               </h3>
               <div className="space-y-2">
                 <button

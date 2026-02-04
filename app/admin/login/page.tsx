@@ -46,7 +46,7 @@ export default function AdminLoginPage() {
         <div className="absolute -bottom-8 left-20 w-72 h-72 bg-amber-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" style={{ animationDelay: '4s' }}></div>
       </div>
 
-      <div className="w-full max-w-md">
+      <div className="w-full max-w  -md">
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">

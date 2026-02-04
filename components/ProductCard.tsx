@@ -27,10 +27,10 @@ export function ProductCard({
   const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
 
   return (
-    <div className="group relative h-full flex flex-col overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100">
+      <div className="group relative h-full flex flex-col overflow-hidden rounded-lg sm:rounded-2xl bg-white shadow-md transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 sm:hover:-translate-y-2 border border-gray-100">
       
       {/* Área da Imagem - Agora clicável para detalhes */}
-      <Link href={`/catalogo/${id}`} className="relative h-72 overflow-hidden bg-gradient-to-br from-slate-50 to-amber-50/30 block" aria-label={`Ver detalhes de ${name}`}>
+      <Link href={`/catalogo/${id}`} className="relative h-48 sm:h-64 md:h-72 overflow-hidden bg-gradient-to-br from-slate-50 to-amber-50/30 block" aria-label={`Ver detalhes de ${name}`}>
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500 z-10" />
         
         {image_url ? (
@@ -52,59 +52,68 @@ export function ProductCard({
       </Link>
 
       {/* Conteúdo */}
-      <div className="p-5 flex flex-col flex-grow">
+      <div className="p-3 sm:p-5 flex flex-col flex-grow">
         {/* Brand & Badge Row */}
-        <div className="flex justify-between items-start mb-3">
-          <span className="text-[10px] font-black uppercase tracking-[0.15em] bg-amber-100 text-amber-900 px-2.5 py-1 rounded-md">
+        <div className="flex justify-between items-start mb-2 sm:mb-3">
+          <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.15em] bg-amber-100 text-amber-900 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md">
             {brand}
           </span>
         </div>
 
         {/* Title */}
         <Link href={`/catalogo/${id}`}>
-          <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-1 group-hover:text-amber-700 transition-colors">
+          <h3 className="text-sm sm:text-base md:text-lg font-bold text-gray-800 mb-1 sm:mb-2 line-clamp-1 group-hover:text-amber-700 transition-colors">
             {name}
           </h3>
         </Link>
         
-        <p className="text-gray-500 text-sm mb-4 line-clamp-2 leading-relaxed">
+        <p className="text-gray-500 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2 leading-relaxed">
           {short_description}
         </p>
 
         {/* Info Box */}
-        <div className="flex items-center justify-between mb-6 p-3 bg-gray-50 rounded-xl border border-gray-100/50">
+        <div className="flex items-center justify-between mb-4 sm:mb-6 p-2 sm:p-3 bg-gray-50 rounded-lg sm:rounded-xl border border-gray-100/50 text-xs sm:text-sm">
           <div>
-            <p className="text-[10px] font-bold text-gray-400 uppercase">Volume</p>
-            <p className="text-sm font-bold text-gray-700">{volume_ml}ml</p>
+            <p className="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase">Volume</p>
+            <p className="text-xs sm:text-sm font-bold text-gray-700">{volume_ml}ml</p>
           </div>
-          <div className="h-8 w-[1px] bg-gray-200" />
+          <div className="h-6 w-[1px] bg-gray-200" />
           <div className="text-right">
-            <p className="text-[10px] font-bold text-gray-400 uppercase">Preço</p>
-            <p className="text-lg font-black text-amber-900">
+            <p className="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase">Preço</p>
+            <p className="text-base sm:text-lg font-black text-amber-900">
               R$ {price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </p>
           </div>
         </div>
 
         {/* Botões - Fixos no rodapé do card */}
-        <div className="grid gap-2 mt-auto">
+        <div className="grid gap-1.5 sm:gap-2 mt-auto">
           <Link href={`/catalogo/${id}`} className="w-full">
-            <button className="w-full text-gray-600 text-sm font-bold py-3 rounded-xl border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all active:scale-95">
+            <button className="w-full text-gray-600 text-xs sm:text-sm font-bold py-2 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all active:scale-95">
               DETALHES
             </button>
           </Link>
           
-          <a 
-            href={whatsappUrl} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            aria-label="Comprar pelo WhatsApp"
-            className="w-full"
-          >
-            <button className="w-full bg-amber-900 text-white text-sm font-bold py-3 rounded-xl shadow-lg shadow-amber-900/20 hover:bg-amber-800 hover:shadow-amber-900/40 transition-all active:scale-95 flex items-center justify-center gap-2">
-              COMPRAR AGORA
+          <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
+            <button
+              onClick={() => {
+                try {
+                  // dynamic import to avoid SSR issues
+                  const event = new CustomEvent('add-to-cart', { detail: { id, name, price, quantity: 1 } });
+                  window.dispatchEvent(event);
+                } catch {}
+              }}
+              className="w-full text-gray-600 text-xs sm:text-sm font-bold py-2 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all active:scale-95"
+            >
+              ADICIONAR
             </button>
-          </a>
+
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="Comprar pelo WhatsApp" className="w-full">
+              <button className="w-full bg-amber-900 text-white text-xs sm:text-sm font-bold py-2 sm:py-3 rounded-lg sm:rounded-xl shadow-lg shadow-amber-900/20 hover:bg-amber-800 hover:shadow-amber-900/40 transition-all active:scale-95 flex items-center justify-center gap-1 sm:gap-2">
+                COMPRAR
+              </button>
+            </a>
+          </div>
         </div>
       </div>
     </div>

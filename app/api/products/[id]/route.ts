@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { getProductById, updateProduct, deleteProduct } from '@/lib/dbClient';
 
 export async function GET(
   request: NextRequest,
@@ -7,29 +7,14 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const db = getDb();
-    const stmt = db.prepare(`
-      SELECT p.*, c.name as category_name 
-      FROM products p 
-      LEFT JOIN categories c ON p.category_id = c.id 
-      WHERE p.id = ?
-    `);
-    const product = stmt.get(id);
-    
+    const product = await getProductById(id as unknown as string);
     if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
-    
     return NextResponse.json(product);
   } catch (error) {
     console.error('Error fetching product:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch product' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 });
   }
 }
 
@@ -40,25 +25,11 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const db = getDb();
-    
-    const { name, brand, price, volume_ml, description, short_description, olfactory_notes, category_id, image_url } = body;
-
-    const stmt = db.prepare(`
-      UPDATE products 
-      SET name = ?, brand = ?, price = ?, volume_ml = ?, description = ?, short_description = ?, olfactory_notes = ?, category_id = ?, image_url = ?, updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?
-    `);
-
-    stmt.run(name, brand, price, volume_ml, description, short_description, olfactory_notes, category_id, image_url, id);
-    
-    return NextResponse.json({ id, ...body });
+    const updated = await updateProduct(id as unknown as string, body);
+    return NextResponse.json(updated);
   } catch (error) {
     console.error('Error updating product:', error);
-    return NextResponse.json(
-      { error: 'Failed to update product' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
   }
 }
 
@@ -68,16 +39,10 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const db = getDb();
-    const stmt = db.prepare('DELETE FROM products WHERE id = ?');
-    stmt.run(id);
-    
+    await deleteProduct(id as unknown as string);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting product:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete product' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
   }
 }

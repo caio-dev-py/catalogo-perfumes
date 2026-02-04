@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 
@@ -24,11 +25,13 @@ interface Category {
 }
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState<'products' | 'categories'>('products');
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'admins'>('products');
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   // Form states
   const [formProduct, setFormProduct] = useState({
@@ -190,15 +193,48 @@ export default function AdminPage() {
     }
   };
 
+  const handleLogout = async () => {
+    if (!confirm('Tem certeza que deseja fazer logout?')) return;
+
+    setLoggingOut(true);
+    try {
+      const res = await fetch('/api/admin/logout', {
+        method: 'POST',
+      });
+
+      if (res.ok) {
+        router.push('/admin/login');
+      } else {
+        alert('Erro ao fazer logout');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      alert('Erro ao conectar ao servidor');
+    } finally {
+      setLoggingOut(false);
+    }
+  };
+
   return (
     <>
       <Navigation />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
-        <h1 className="text-5xl font-bold bg-gradient-to-r from-amber-900 to-amber-700 bg-clip-text text-transparent mb-4">
-          ⚙️ Painel Administrativo
-        </h1>
-        <p className="text-gray-600 text-lg mb-12">Gerencie todos os produtos e categorias</p>
+        <div className="flex justify-between items-start mb-8">
+          <div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-amber-900 to-amber-700 bg-clip-text text-transparent mb-4">
+              Painel Administrativo
+            </h1>
+            <p className="text-gray-600 text-lg">Gerencie todos os produtos e categorias</p>
+          </div>
+          <button
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-all disabled:opacity-50"
+          >
+            {loggingOut ? '🔄 Saindo...' : '🚪 Logout'}
+          </button>
+        </div>
 
         {/* Tabs */}
         <div className="flex space-x-4 mb-8 border-b-2 border-gray-200">
@@ -210,7 +246,7 @@ export default function AdminPage() {
                 : 'text-gray-600 hover:text-gray-800'
             }`}
           >
-            🧴 Perfumes
+            Perfumes
             {activeTab === 'products' && (
               <span className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-amber-900 to-amber-700 rounded-full"></span>
             )}
@@ -223,8 +259,21 @@ export default function AdminPage() {
                 : 'text-gray-600 hover:text-gray-800'
             }`}
           >
-            📂 Categorias
+            Categorias
             {activeTab === 'categories' && (
+              <span className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-amber-900 to-amber-700 rounded-full"></span>
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab('admins')}
+            className={`px-8 py-3 font-bold transition-all duration-300 relative ${
+              activeTab === 'admins'
+                ? 'text-amber-900'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            Gerenciar Admins
+            {activeTab === 'admins' && (
               <span className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-amber-900 to-amber-700 rounded-full"></span>
             )}
           </button>
@@ -516,6 +565,112 @@ export default function AdminPage() {
               ) : (
                 <p className="text-gray-500">Nenhuma categoria cadastrada.</p>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Admins Tab */}
+        {activeTab === 'admins' && (
+          <div className="bg-white p-8 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+              Gerenciar Administradores
+            </h2>
+
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-8">
+              <h3 className="font-semibold text-blue-900 mb-2">ℹ️ Como gerenciar admins:</h3>
+              <ul className="text-blue-800 text-sm space-y-2">
+                <li>
+                  <strong>Adicionar novo admin:</strong> Use a linha de comando ou um cliente HTTP:
+                  <code className="block bg-white p-2 mt-1 rounded border border-blue-200 overflow-x-auto text-xs">
+                    curl -X POST http://localhost:3000/api/admin/register \<br />
+                    -H "Content-Type: application/json" \<br />
+                    -d '{"{"}username":"seu_usuario","password":"sua_senha","secret":"change_this_to_a_strong_secret"{"}"}'
+                  </code>
+                </li>
+                <li>
+                  <strong>Via Node.js script:</strong> Crie um arquivo `add-admin.js` (veja instruções abaixo)
+                </li>
+                <li>
+                  <strong>Excluir admin:</strong> Atualmente não há endpoint, mas pode ser feito via Supabase SQL ou script
+                </li>
+              </ul>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Instruções */}
+              <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">📋 Scripts Rápidos</h3>
+
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-semibold text-gray-700 mb-2">1️⃣ Adicionar Admin (Node.js)</h4>
+                    <p className="text-gray-600 text-sm mb-2">
+                      Crie um arquivo `add-admin.js` na raiz do projeto:
+                    </p>
+                    <code className="block bg-white p-3 rounded text-xs overflow-x-auto border border-gray-300 text-gray-800">
+{`const fetch = require('node-fetch');
+
+(async () => {
+  const username = process.argv[2] || 'novo_admin';
+  const password = process.argv[3] || 'senha123';
+  const secret = process.env.ADMIN_SECRET_KEY || 'change_this_to_a_strong_secret';
+
+  const res = await fetch('http://localhost:3000/api/admin/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password, secret }),
+  });
+
+  const data = await res.json();
+  console.log(res.ok ? '✅ Admin criado!' : '❌ Erro:', data);
+})();`}
+                    </code>
+                    <p className="text-gray-600 text-xs mt-2">
+                      Rodar: <code>node add-admin.js seu_usuario sua_senha</code>
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-gray-700 mb-2">2️⃣ Excluir Admin (SQL - Supabase)</h4>
+                    <p className="text-gray-600 text-sm mb-2">
+                      No Supabase SQL Editor, execute:
+                    </p>
+                    <code className="block bg-white p-3 rounded text-xs overflow-x-auto border border-gray-300 text-gray-800">
+{`DELETE FROM public.admins WHERE username = 'username_aqui';`}
+                    </code>
+                  </div>
+                </div>
+              </div>
+
+              {/* Variáveis de Ambiente */}
+              <div className="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">🔑 Variáveis Importantes</h3>
+
+                <p className="text-gray-700 mb-4 text-sm">
+                  No arquivo <code className="bg-white px-2 py-1 rounded">.env.local</code>:
+                </p>
+
+                <code className="block bg-white p-3 rounded text-xs overflow-x-auto border border-yellow-300 text-gray-800 space-y-1">
+{`ADMIN_SECRET_KEY=change_this_to_a_strong_secret
+SUPABASE_URL=https://sssxvwgyebehdehwhuec.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=seu_token_aqui`}
+                </code>
+
+                <p className="text-gray-600 text-xs mt-4">
+                  <strong>⚠️ Importante:</strong> Mude o <code className="bg-white px-2 py-1 rounded">ADMIN_SECRET_KEY</code> para uma chave forte e segura.
+                </p>
+              </div>
+            </div>
+
+            {/* Botão para executar script */}
+            <div className="mt-8 p-6 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg border border-amber-200">
+              <h3 className="font-semibold text-amber-900 mb-4">🚀 Quick Start</h3>
+              <p className="text-gray-700 mb-4 text-sm">
+                Para testes rápidos, você pode usar o script `create-admin-quick.js` do projeto (se existir):
+              </p>
+              <code className="block bg-white p-3 rounded text-sm border border-amber-300 text-gray-800 overflow-x-auto">
+                node create-admin-quick.js
+              </code>
             </div>
           </div>
         )}

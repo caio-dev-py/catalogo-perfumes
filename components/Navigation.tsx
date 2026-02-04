@@ -2,10 +2,14 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { useCart } from './CartProvider';
+import { CartDrawer } from './CartDrawer';
 
 export function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+  const { totalItems: cartCount } = useCart();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -58,6 +62,10 @@ export function Navigation() {
             >
               Painel Admin
             </Link>
+            <button onClick={() => setCartOpen(true)} className="relative bg-transparent px-3 py-2 rounded-full text-gray-700 hover:text-amber-900">
+              🛒
+              <span className="absolute -top-2 -right-2 bg-amber-900 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{cartCount}</span>
+            </button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -75,6 +83,8 @@ export function Navigation() {
           </div>
         </div>
       </div>
+
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
 
       {/* Mobile Menu Overlay */}
       <div className={`md:hidden absolute w-full bg-white border-b border-gray-100 transition-all duration-300 overflow-hidden ${

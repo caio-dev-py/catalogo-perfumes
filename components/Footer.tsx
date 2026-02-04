@@ -16,32 +16,32 @@ export function Footer() {
       {/* Elementos Decorativos Sutis */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-px bg-gradient-to-r from-transparent via-amber-900/50 to-transparent" />
       
-      <div className="max-w-6xl mx-auto px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-6 sm:gap-8 md:gap-12 mb-8 sm:mb-12 md:mb-16">
           
-          {/* Brand - Ocupa 5 colunas no desk */}
-          <div className="md:col-span-5 space-y-6">
-            <Link href="/" className="flex items-center space-x-3 group">
-              <span className="text-2xl group-hover:rotate-12 transition-transform duration-500">🧴</span>
-              <span className="font-bold text-xl tracking-[0.2em] text-white">
-                PERFUMES <span className="font-light text-amber-500">PREMIUM</span>
+          {/* Brand - Full width mobile, 5 colunas desktop */}
+          <div className="sm:col-span-1 md:col-span-5 space-y-4 sm:space-y-6">
+            <Link href="/" className="flex items-center space-x-2 sm:space-x-3 group">
+              <span className="text-2xl sm:text-3xl group-hover:rotate-12 transition-transform duration-500">🧴</span>
+              <span className="font-bold text-lg sm:text-xl tracking-[0.2em] text-white">
+                <span className="text-sm sm:text-base">PERFUMES</span> <span className="font-light text-amber-500 block sm:inline">PREMIUM</span>
               </span>
             </Link>
-            <p className="text-gray-500 leading-relaxed max-w-sm text-sm">
+            <p className="text-gray-500 leading-relaxed max-w-sm text-xs sm:text-sm">
               Curadoria exclusiva das fragrâncias mais sofisticadas do mundo. 
               Elevando sua presença através do aroma desde 2020.
             </p>
           </div>
 
-          {/* Links - Ocupa 3 colunas */}
-          <div className="md:col-span-3 space-y-6">
-            <h3 className="text-xs font-black uppercase tracking-[0.3em] text-amber-600">Navegação</h3>
-            <ul className="space-y-3">
+          {/* Links - 1 coluna mobile, 3 desktop */}
+          <div className="sm:col-span-1 md:col-span-3 space-y-3 sm:space-y-6">
+            <h3 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-amber-600">Navegação</h3>
+            <ul className="space-y-2 sm:space-y-3">
               {footerLinks.map((link) => (
                 <li key={link.name}>
                   <Link 
                     href={link.href} 
-                    className="text-gray-400 hover:text-white text-sm transition-colors duration-300 flex items-center group"
+                    className="text-gray-400 hover:text-white text-xs sm:text-sm transition-colors duration-300 flex items-center group"
                   >
                     <span className="w-0 group-hover:w-2 h-px bg-amber-500 mr-0 group-hover:mr-2 transition-all duration-300"></span>
                     {link.name}
@@ -51,19 +51,19 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Contact & Social - Ocupa 4 colunas */}
-          <div className="md:col-span-4 space-y-6">
-            <h3 className="text-xs font-black uppercase tracking-[0.3em] text-amber-600">Contato & Redes</h3>
-            <div className="space-y-2 text-sm text-gray-400">
-              <p className="hover:text-amber-500 transition-colors cursor-pointer">contato@perfumespremium.com.br</p>
+          {/* Contact & Social - 1 coluna mobile, 4 desktop */}
+          <div className="sm:col-span-1 md:col-span-4 space-y-3 sm:space-y-6">
+            <h3 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-amber-600">Contato & Redes</h3>
+            <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-gray-400">
+              <p className="hover:text-amber-500 transition-colors cursor-pointer break-all">contato@perfumespremium.com.br</p>
               <p>São Paulo, SP — Brasil</p>
             </div>
             
-            <div className="flex space-x-4 pt-2">
+            <div className="flex flex-wrap gap-2 sm:gap-4 pt-2">
               {['Instagram', 'WhatsApp', 'Facebook'].map((social) => (
                 <button
                   key={social}
-                  className="text-[10px] font-bold uppercase tracking-widest border border-white/10 px-4 py-2 rounded-full hover:bg-white hover:text-black transition-all duration-300"
+                  className="text-[8px] sm:text-[10px] font-bold uppercase tracking-widest border border-white/10 px-2 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-white hover:text-black transition-all duration-300"
                 >
                   {social}
                 </button>
@@ -73,16 +73,16 @@ export function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-[11px] text-gray-600 uppercase tracking-widest">
+        <div className="pt-6 sm:pt-8 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-6 text-center sm:text-left">
+          <p className="text-[9px] sm:text-[11px] text-gray-600 uppercase tracking-widest order-last sm:order-first">
             © {currentYear} Todos os direitos reservados.
           </p>
           
-          <div className="flex space-x-8">
-            <Link href="#" className="text-[11px] text-gray-600 uppercase tracking-widest hover:text-amber-500 transition-colors">
+          <div className="flex space-x-4 sm:space-x-8">
+            <Link href="#" className="text-[9px] sm:text-[11px] text-gray-600 uppercase tracking-widest hover:text-amber-500 transition-colors">
               Privacidade
             </Link>
-            <Link href="#" className="text-[11px] text-gray-600 uppercase tracking-widest hover:text-amber-500 transition-colors">
+            <Link href="#" className="text-[9px] sm:text-[11px] text-gray-600 uppercase tracking-widest hover:text-amber-500 transition-colors">
               Termos
             </Link>
           </div>
